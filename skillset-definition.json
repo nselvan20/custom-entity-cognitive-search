@@ -1,0 +1,451 @@
+{
+  "@odata.context": "https://<YOUR COGNITIVE SEARCH NAME>.search.windows.net/$metadata#skillsets/$entity",
+  "@odata.etag": "\"<AUTOMATICALLY CREATED>\"",
+  "name": "clinical-trials-small",
+  "description": "Skillset created from the portal. skillsetName: clinical-trials-small; contentField: merged_content; enrichmentGranularity: sentences; knowledgeStoreStorageAccount: saazsearchblob1;",
+  "skills": [
+    {
+      "@odata.type": "#Microsoft.Skills.Text.CustomEntityLookupSkill",
+      "name": "customEntityLookup",
+      "description": null,
+      "context": "/document/merged_content/sentences/*",
+      "defaultLanguageCode": "en",
+      "entitiesDefinitionUri": "<YOUR SAS KEY>",
+      "globalDefaultCaseSensitive": null,
+      "globalDefaultAccentSensitive": null,
+      "globalDefaultFuzzyEditDistance": null,
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/merged_content/sentences/*"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "entities",
+          "targetName": "diseases"
+        }
+      ],
+      "inlineEntitiesDefinition": []
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.SplitSkill",
+      "name": "#1",
+      "description": null,
+      "context": "/document/merged_content",
+      "defaultLanguageCode": "en",
+      "textSplitMode": "sentences",
+      "maximumPageLength": 10000,
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/merged_content"
+        },
+        {
+          "name": "languageCode",
+          "source": "/document/language"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "textItems",
+          "targetName": "sentences"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.V3.EntityRecognitionSkill",
+      "name": "#2",
+      "description": null,
+      "context": "/document/merged_content/sentences/*",
+      "categories": [
+        "Product",
+        "PhoneNumber",
+        "Person",
+        "Quantity",
+        "Organization",
+        "IPAddress",
+        "URL",
+        "Email",
+        "Event",
+        "Skill",
+        "Location",
+        "PersonType",
+        "Address",
+        "DateTime"
+      ],
+      "defaultLanguageCode": "en",
+      "minimumPrecision": null,
+      "modelVersion": null,
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/merged_content/sentences/*"
+        },
+        {
+          "name": "languageCode",
+          "source": "/document/language"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "locations",
+          "targetName": "locations"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
+      "name": "#3",
+      "description": null,
+      "context": "/document/merged_content/sentences/*",
+      "defaultLanguageCode": "en",
+      "maxKeyPhraseCount": null,
+      "modelVersion": null,
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/merged_content/sentences/*"
+        },
+        {
+          "name": "languageCode",
+          "source": "/document/language"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "keyPhrases",
+          "targetName": "keyphrases"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.LanguageDetectionSkill",
+      "name": "#4",
+      "description": null,
+      "context": "/document",
+      "defaultCountryHint": null,
+      "modelVersion": null,
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/merged_content"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "languageCode",
+          "targetName": "language"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.TranslationSkill",
+      "name": "#5",
+      "description": null,
+      "context": "/document/merged_content/sentences/*",
+      "defaultFromLanguageCode": null,
+      "defaultToLanguageCode": "en",
+      "suggestedFrom": "en",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/merged_content/sentences/*"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "translatedText",
+          "targetName": "translated_text"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
+      "name": "#6",
+      "description": null,
+      "context": "/document",
+      "insertPreTag": " ",
+      "insertPostTag": " ",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/content"
+        },
+        {
+          "name": "itemsToInsert",
+          "source": "/document/normalized_images/*/text"
+        },
+        {
+          "name": "offsets",
+          "source": "/document/normalized_images/*/contentOffset"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mergedText",
+          "targetName": "merged_content"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
+      "name": "#7",
+      "description": null,
+      "context": "/document/normalized_images/*",
+      "textExtractionAlgorithm": null,
+      "lineEnding": "Space",
+      "defaultLanguageCode": "en",
+      "detectOrientation": true,
+      "inputs": [
+        {
+          "name": "image",
+          "source": "/document/normalized_images/*"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "text",
+          "targetName": "text"
+        },
+        {
+          "name": "layoutText",
+          "targetName": "layoutText"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
+      "name": "#8",
+      "description": null,
+      "context": "/document/normalized_images/*",
+      "inputs": [
+        {
+          "name": "image",
+          "sourceContext": "/document/normalized_images/*",
+          "inputs": [
+            {
+              "name": "width",
+              "source": "/document/normalized_images/*/width"
+            },
+            {
+              "name": "height",
+              "source": "/document/normalized_images/*/height"
+            },
+            {
+              "name": "originalWidth",
+              "source": "/document/normalized_images/*/originalWidth"
+            },
+            {
+              "name": "originalHeight",
+              "source": "/document/normalized_images/*/originalHeight"
+            },
+            {
+              "name": "text",
+              "source": "/document/normalized_images/*/text"
+            },
+            {
+              "name": "imgdata",
+              "source": "/document/normalized_images/*"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "targetName": "imageprojection"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
+      "name": "#9",
+      "description": null,
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "Lastupdateposted",
+          "source": "/document/Lastupdateposted"
+        },
+        {
+          "name": "Trials",
+          "source": "/document/Trials"
+        },
+        {
+          "name": "metadata_storage_content_type",
+          "source": "/document/metadata_storage_content_type"
+        },
+        {
+          "name": "metadata_storage_size",
+          "source": "/document/metadata_storage_size"
+        },
+        {
+          "name": "metadata_storage_last_modified",
+          "source": "/document/metadata_storage_last_modified"
+        },
+        {
+          "name": "metadata_storage_content_md5",
+          "source": "/document/metadata_storage_content_md5"
+        },
+        {
+          "name": "metadata_storage_name",
+          "source": "/document/metadata_storage_name"
+        },
+        {
+          "name": "metadata_storage_path",
+          "source": "/document/metadata_storage_path"
+        },
+        {
+          "name": "metadata_storage_file_extension",
+          "source": "/document/metadata_storage_file_extension"
+        },
+        {
+          "name": "metadata_content_type",
+          "source": "/document/metadata_content_type"
+        },
+        {
+          "name": "metadata_language",
+          "source": "/document/metadata_language"
+        },
+        {
+          "name": "metadata_author",
+          "source": "/document/metadata_author"
+        },
+        {
+          "name": "metadata_title",
+          "source": "/document/metadata_title"
+        },
+        {
+          "name": "metadata_creation_date",
+          "source": "/document/metadata_creation_date"
+        },
+        {
+          "name": "merged_content",
+          "source": "/document/merged_content"
+        },
+        {
+          "name": "sentences",
+          "sourceContext": "/document/merged_content/sentences/*",
+          "inputs": [
+            {
+              "name": "keyPhrases",
+              "source": "/document/merged_content/sentences/*/keyphrases/*"
+            },
+            {
+              "name": "languageCode",
+              "source": "/document/language"
+            },
+            {
+              "name": "translatedText",
+              "source": "/document/merged_content/sentences/*/translated_text"
+            },
+            {
+              "name": "Entities",
+              "sourceContext": "/document/merged_content/sentences/*/entities/*",
+              "inputs": [
+                {
+                  "name": "Entity",
+                  "source": "/document/merged_content/sentences/*/entities/*/name"
+                },
+                {
+                  "name": "EntityType",
+                  "source": "/document/merged_content/sentences/*/entities/*/type"
+                },
+                {
+                  "name": "EntitySubType",
+                  "source": "/document/merged_content/sentences/*/entities/*/subType"
+                },
+                {
+                  "name": "Url",
+                  "source": "/document/merged_content/sentences/*/entities/*/wikipediaUrl"
+                }
+              ]
+            },
+            {
+              "name": "Sentence",
+              "source": "/document/merged_content/sentences/*"
+            }
+          ]
+        },
+        {
+          "name": "Images",
+          "source": "/document/normalized_images/*/imageprojection/image"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "targetName": "tableprojection"
+        }
+      ]
+    }
+  ],
+  "cognitiveServices": {
+    "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
+    "description": "",
+    "key": ""
+  },
+  "knowledgeStore": {
+    "storageConnectionString": "",
+    "projections": [
+      {
+        "tables": [
+          {
+            "tableName": "clinicalTrialsSmallDocument",
+            "referenceKeyName": null,
+            "generatedKeyName": "Documentid",
+            "source": "/document/tableprojection",
+            "sourceContext": null,
+            "inputs": []
+          },
+          {
+            "tableName": "clinicalTrialsSmallSentences",
+            "referenceKeyName": null,
+            "generatedKeyName": "Sentencesid",
+            "source": "/document/tableprojection/sentences/*",
+            "sourceContext": null,
+            "inputs": []
+          },
+          {
+            "tableName": "clinicalTrialsSmallKeyPhrases",
+            "referenceKeyName": null,
+            "generatedKeyName": "KeyPhrasesid",
+            "source": null,
+            "sourceContext": "/document/tableprojection/sentences/*/keyPhrases/*",
+            "inputs": [
+              {
+                "name": "keyphrases",
+                "source": "/document/tableprojection/sentences/*/keyPhrases/*",
+                "sourceContext": null,
+                "inputs": []
+              }
+            ]
+          },
+          {
+            "tableName": "clinicalTrialsSmallEntities",
+            "referenceKeyName": null,
+            "generatedKeyName": "Entitiesid",
+            "source": "/document/tableprojection/sentences/*/Entities/*",
+            "sourceContext": null,
+            "inputs": []
+          },
+          {
+            "tableName": "clinicalTrialsSmallImages",
+            "referenceKeyName": null,
+            "generatedKeyName": "Imagesid",
+            "source": "/document/tableprojection/Images/*",
+            "sourceContext": null,
+            "inputs": []
+          }
+        ],
+        "objects": [],
+        "files": []
+      }
+    ],
+    "parameters": {
+      "synthesizeGeneratedKeyName": true
+    }
+  },
+  "encryptionKey": null
+}
