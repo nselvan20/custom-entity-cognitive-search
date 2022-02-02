@@ -1,0 +1,72 @@
+{
+  "@odata.context": "https://<YOUR COGNITIVE SEARCH>.search.windows.net/$metadata#indexers/$entity",
+  "@odata.etag": "\"<AUTOMATICALLY CREATED>\"",
+  "name": "clinical-trials-small",
+  "description": "",
+  "dataSourceName": "clinical-trials-small",
+  "skillsetName": "clinical-trials-small",
+  "targetIndexName": "clinical-trials-small",
+  "disabled": null,
+  "schedule": null,
+  "parameters": {
+    "batchSize": null,
+    "maxFailedItems": 0,
+    "maxFailedItemsPerBatch": 0,
+    "base64EncodeKeys": null,
+    "configuration": {
+      "dataToExtract": "contentAndMetadata",
+      "parsingMode": "default",
+      "imageAction": "generateNormalizedImages"
+    }
+  },
+  "fieldMappings": [
+    {
+      "sourceFieldName": "metadata_storage_path",
+      "targetFieldName": "metadata_storage_path",
+      "mappingFunction": {
+        "name": "base64Encode",
+        "parameters": null
+      }
+    }
+  ],
+  "outputFieldMappings": [
+    {
+      "sourceFieldName": "/document/merged_content/sentences/*/locations/*",
+      "targetFieldName": "locations"
+    },
+    {
+      "sourceFieldName": "/document/merged_content/sentences/*/keyphrases/*",
+      "targetFieldName": "keyphrases"
+    },
+    {
+      "sourceFieldName": "/document/merged_content/sentences/*/diseases/*/name",
+      "targetFieldName": "diseases"
+    },
+    {
+      "sourceFieldName": "/document/language",
+      "targetFieldName": "language"
+    },
+    {
+      "sourceFieldName": "/document/merged_content/sentences/*/translated_text",
+      "targetFieldName": "translated_text"
+    },
+    {
+      "sourceFieldName": "/document/merged_content",
+      "targetFieldName": "merged_content"
+    },
+    {
+      "sourceFieldName": "/document/normalized_images/*/text",
+      "targetFieldName": "text"
+    },
+    {
+      "sourceFieldName": "/document/normalized_images/*/layoutText",
+      "targetFieldName": "layoutText"
+    }
+  ],
+  "cache": {
+    "id": "<INSERT YOUR CACHE ID>",
+    "enableReprocessing": true,
+    "storageConnectionString": "<INSERT HERE>"
+  },
+  "encryptionKey": null
+}
